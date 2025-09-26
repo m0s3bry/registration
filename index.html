@@ -1,175 +1,692 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Sign Up</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8" />
+<title>🚀 Habitat Designer — NASA Space Apps 2025</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --space-black: #0a0a0f;
+  --space-blue: #1e40af;
+  --space-cyan: #06b6d4;
+  --space-purple: #7c3aed;
+  --space-orange: #f97316;
+  --nasa-red: #fc1c03;
+  --cosmic-glow: rgba(14, 165, 233, 0.3);
+  --panel-dark: rgba(15, 23, 42, 0.95);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: linear-gradient(135deg, var(--space-black) 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e2e8f0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated space background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 200vw; height: 200vh;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #ffffff, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 90px 40px, #ffffff, transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: starfield 120s linear infinite;
+  z-index: -1;
+  opacity: 0.4;
+}
+
+@keyframes starfield {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-200px, -100px, 0); }
+}
+
+.glass-panel {
+  background: var(--panel-dark);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.header {
+  padding: 20px;
+  text-align: center;
+}
+
+.header h1 {
+  font-family: 'Orbitron', monospace;
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--space-cyan), var(--space-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.main-container {
+  display: grid;
+  grid-template-columns: 300px 1fr 320px;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: calc(100vh - 140px);
+}
+
+.panel {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.panel h3 {
+  font-family: 'Orbitron', monospace;
+  color: var(--space-cyan);
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+
+/* اهم حاجة - الـ Drag Items الحقيقية */
+.drag-item {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 10px 0;
+  cursor: grab;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.drag-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.2);
+  border-color: var(--space-cyan);
+}
+
+.drag-item:active {
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+
+.drag-item .icon {
+  font-size: 1.5rem;
+  width: 40px;
+  text-align: center;
+}
+
+.drag-item .details {
+  flex: 1;
+}
+
+.drag-item .name {
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.drag-item .specs {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.canvas-container {
+  position: relative;
+  height: 100%;
+}
+
+.canvas-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+input[type="number"] {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #e2e8f0;
+  padding: 6px 8px;
+  width: 80px;
+}
+
+.btn {
+  background: linear-gradient(135deg, var(--space-blue), var(--space-purple));
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(126, 58, 237, 0.3);
+}
+
+/* المرحلة الجامدة - الـ Stage */
+#stage {
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(126, 58, 237, 0.1) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(15, 23, 42, 0.9));
+  border: 2px dashed rgba(14, 165, 233, 0.3);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+/* الـ Modules الحقيقية */
+.habitat-module {
+  position: absolute;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: move;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+}
+
+.habitat-module:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.habitat-module.selected {
+  outline: 3px solid var(--space-cyan);
+  outline-offset: 2px;
+}
+
+.module-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.module-name {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.module-size {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* تأثيرات الخلفية للمودولات */
+.module-sleep { background: linear-gradient(135deg, rgba(99, 102, 241, 0.7), rgba(79, 70, 229, 0.5)); }
+.module-kitchen { background: linear-gradient(135deg, rgba(245, 158, 11, 0.7), rgba(217, 119, 6, 0.5)); }
+.module-hygiene { background: linear-gradient(135deg, rgba(14, 165, 233, 0.7), rgba(2, 132, 199, 0.5)); }
+.module-gym { background: linear-gradient(135deg, rgba(34, 197, 94, 0.7), rgba(22, 163, 74, 0.5)); }
+.module-storage { background: linear-gradient(135deg, rgba(107, 114, 128, 0.7), rgba(75, 85, 99, 0.5)); }
+.module-medical { background: linear-gradient(135deg, rgba(239, 68, 68, 0.7), rgba(220, 38, 38, 0.5)); }
+.module-lab { background: linear-gradient(135deg, rgba(126, 58, 237, 0.7), rgba(109, 40, 217, 0.5)); }
+.module-airlock { background: linear-gradient(135deg, rgba(156, 163, 175, 0.7), rgba(107, 114, 128, 0.5)); }
+
+.status {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin: 12px 0;
+}
+
+.status.ok {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.1));
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+}
+
+.status.warn {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.status.err {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+@media (max-width: 1200px) {
+  .main-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
+}
+</style>
 </head>
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4 relative">
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
+<body>
+
+<div class="header">
+  <h1>🚀 HABITAT DESIGNER</h1>
+  <p class="subtitle">NASA Space Apps Challenge 2025 • Advanced 3D Layout Creator</p>
+</div>
+
+<div class="main-container">
+  <!-- Palette بمودولات حقيقية -->
+  <div class="glass-panel panel">
+    <h3><i class="fas fa-puzzle-piece"></i> Habitat Modules</h3>
+    
+    <div class="drag-item" draggable="true" data-type="sleep" data-w="3" data-h="3">
+      <div class="icon">🛏️</div>
+      <div class="details">
+        <div class="name">Sleep Quarters</div>
+        <div class="specs">3×3m • Privacy pod with sleep restraints</div>
+      </div>
     </div>
     
-    <div class="glass-effect rounded-2xl p-8 w-full max-w-md shadow-2xl relative z-10">
-        <!-- Tab Navigation -->
-        <div class="flex mb-8 bg-white bg-opacity-10 rounded-lg p-1">
-            <button id="loginTab" class="tab-active flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-300">
-                Login
-            </button>
-            <button id="signupTab" class="tab-inactive flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-300">
-                Sign Up
-            </button>
-        </div>
-
-        <!-- Login Form -->
-        <div id="loginForm" class="form-container form-slide-in">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-                    </svg>
-                </div>
-                <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-                <p class="text-white text-opacity-80">Sign in to your account</p>
-            </div>
-
-            <form id="loginFormElement" class="space-y-6">
-                <div>
-                    <label for="loginEmail" class="block text-white text-sm font-medium mb-2">Email Address</label>
-                    <input type="email" id="loginEmail" name="email" required
-                           class="input-focus w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300"
-                           placeholder="john.doe@example.com">
-                </div>
-
-                <div>
-                    <label for="loginPassword" class="block text-white text-sm font-medium mb-2">Password</label>
-                    <div class="relative">
-                        <input type="password" id="loginPassword" name="password" required
-                               class="input-focus w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300"
-                               placeholder="••••••••">
-                        <button type="button" id="toggleLoginPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-opacity-70 hover:text-opacity-100">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <input type="checkbox" id="rememberMe" name="rememberMe"
-                               class="w-4 h-4 text-white bg-white bg-opacity-20 border-white border-opacity-30 rounded focus:ring-white focus:ring-opacity-50">
-                        <label for="rememberMe" class="text-white text-sm">Remember me</label>
-                    </div>
-                    <a href="#" class="text-white text-sm underline hover:text-opacity-80 transition-colors">Forgot password?</a>
-                </div>
-
-                <button type="submit" 
-                        class="w-full bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transform hover:scale-105 transition-all duration-300 shadow-lg">
-                    Sign In
-                </button>
-            </form>
-        </div>
-
-        <!-- Sign Up Form -->
-        <div id="signupForm" class="form-container form-slide-out absolute top-20 left-8 right-8">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                </div>
-                <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
-                <p class="text-white text-opacity-80">Join us and start your journey</p>
-            </div>
-
-            <form id="signupFormElement" class="space-y-6">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="firstName" class="block text-white text-sm font-medium mb-2">First Name</label>
-                        <input type="text" id="firstName" name="firstName" required
-                               class="input-focus w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300"
-                               placeholder="John">
-                    </div>
-                    <div>
-                        <label for="lastName" class="block text-white text-sm font-medium mb-2">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" required
-                               class="input-focus w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300"
-                               placeholder="Doe">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="signupEmail" class="block text-white text-sm font-medium mb-2">Email Address</label>
-                    <input type="email" id="signupEmail" name="email" required
-                           class="input-focus w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300"
-                           placeholder="john.doe@example.com">
-                </div>
-
-                <div>
-                    <label for="signupPassword" class="block text-white text-sm font-medium mb-2">Password</label>
-                    <div class="relative">
-                        <input type="password" id="signupPassword" name="password" required
-                               class="input-focus w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300"
-                               placeholder="••••••••">
-                        <button type="button" id="toggleSignupPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-opacity-70 hover:text-opacity-100">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="confirmPassword" class="block text-white text-sm font-medium mb-2">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required
-                           class="input-focus w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300"
-                           placeholder="••••••••">
-                </div>
-
-                <div class="flex items-start space-x-3">
-                    <input type="checkbox" id="terms" name="terms" required
-                           class="mt-1 w-4 h-4 text-white bg-white bg-opacity-20 border-white border-opacity-30 rounded focus:ring-white focus:ring-opacity-50">
-                    <label for="terms" class="text-white text-sm">
-                        I agree to the <a href="#" class="underline hover:text-opacity-80 transition-colors">Terms of Service</a> and <a href="#" class="underline hover:text-opacity-80 transition-colors">Privacy Policy</a>
-                    </label>
-                </div>
-
-                <button type="submit" 
-                        class="w-full bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transform hover:scale-105 transition-all duration-300 shadow-lg">
-                    Create Account
-                </button>
-            </form>
-        </div>
-
-        <!-- Success Messages -->
-        <div id="loginSuccess" class="success-message mt-6 p-4 bg-green-500 bg-opacity-20 border border-green-400 border-opacity-30 rounded-lg">
-            <div class="flex items-center space-x-2">
-                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                <span class="text-green-400 font-medium">Login successful!</span>
-            </div>
-            <p class="text-green-300 text-sm mt-1">Welcome back! Redirecting to dashboard...</p>
-        </div>
-
-        <div id="signupSuccess" class="success-message mt-6 p-4 bg-green-500 bg-opacity-20 border border-green-400 border-opacity-30 rounded-lg">
-            <div class="flex items-center space-x-2">
-                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                <span class="text-green-400 font-medium">Account created successfully!</span>
-            </div>
-            <p class="text-green-300 text-sm mt-1">Welcome aboard! Check your email for verification.</p>
-        </div>
+    <div class="drag-item" draggable="true" data-type="kitchen" data-w="2.5" data-h="2">
+      <div class="icon">🍽️</div>
+      <div class="details">
+        <div class="name">Galley & Food Prep</div>
+        <div class="specs">2.5×2m • Hydration, heating, storage</div>
+      </div>
     </div>
+    
+    <div class="drag-item" draggable="true" data-type="hygiene" data-w="2" data-h="2">
+      <div class="icon">🚿</div>
+      <div class="details">
+        <div class="name">Hygiene Station</div>
+        <div class="specs">2×2m • Waste management, cleaning</div>
+      </div>
+    </div>
+    
+    <div class="drag-item" draggable="true" data-type="gym" data-w="3" data-h="2">
+      <div class="icon">💪</div>
+      <div class="details">
+        <div class="name">Exercise Equipment</div>
+        <div class="specs">3×2m • COLPA, treadmill, resistance</div>
+      </div>
+    </div>
+    
+    <div class="drag-item" draggable="true" data-type="storage" data-w="2" data-h="1.5">
+      <div class="icon">📦</div>
+      <div class="details">
+        <div class="name">Cargo Storage</div>
+        <div class="specs">2×1.5m • Supplies, tools, spares</div>
+      </div>
+    </div>
+    
+    <div class="drag-item" draggable="true" data-type="medical" data-w="2.5" data-h="2">
+      <div class="icon">🏥</div>
+      <div class="details">
+        <div class="name">Medical Bay</div>
+        <div class="specs">2.5×2m • Emergency care, diagnostics</div>
+      </div>
+    </div>
+    
+    <div class="drag-item" draggable="true" data-type="lab" data-w="3" data-h="2.5">
+      <div class="icon">🔬</div>
+      <div class="details">
+        <div class="name">Science Laboratory</div>
+        <div class="specs">3×2.5m • Research, experiments</div>
+      </div>
+    </div>
+    
+    <div class="drag-item" draggable="true" data-type="airlock" data-w="2" data-h="2">
+      <div class="icon">🚪</div>
+      <div class="details">
+        <div class="name">Airlock</div>
+        <div class="specs">2×2m • EVA prep, suit storage</div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 12px; background: rgba(14, 165, 233, 0.1); border-radius: 8px;">
+      <div style="font-size: 0.85rem; color: #94a3b8;">
+        <strong>💡 Pro Tip:</strong> Drag modules to the canvas. Each has realistic NASA-based specifications.
+      </div>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98390bd5237b1896',t:'MTc1ODYyMDA2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+  <!-- Canvas -->
+  <div class="glass-panel">
+    <div class="canvas-container">
+      <div class="canvas-controls">
+        <div class="control-group">
+          <label>Width:</label>
+          <input id="habW" type="number" min="5" step="0.5" value="12">
+          <span>m</span>
+        </div>
+        <div class="control-group">
+          <label>Height:</label>
+          <input id="habH" type="number" min="5" step="0.5" value="8">
+          <span>m</span>
+        </div>
+        <div class="control-group">
+          <label>Crew:</label>
+          <input id="crew" type="number" min="1" value="4">
+        </div>
+        <button id="reset" class="btn">🔄 Reset</button>
+        <button id="vrMode" class="btn">🥽 3D View</button>
+      </div>
+      
+      <div id="stage"></div>
+      
+      <div id="statusBox" class="status ok">
+        ✅ System Ready — Drag modules from the left panel
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+        <div style="color: #94a3b8;">
+          <strong>Total Floor Area:</strong> <span id="areaSum">0</span> m²
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="exportJSON" class="btn">📥 Export</button>
+          <button id="screenshot" class="btn">📸 Capture</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inspector -->
+  <div class="glass-panel panel">
+    <h3><i class="fas fa-cog"></i> Module Inspector</h3>
+    <div style="margin-bottom: 16px;">
+      <strong>Selected:</strong> <span id="selTitle" style="color: var(--space-cyan);">None</span>
+    </div>
+    
+    <div id="moduleDetails" style="display: none;">
+      <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin: 12px 0;">
+        <h4 id="detailTitle">Module Details</h4>
+        <div id="detailSpecs" style="font-size: 0.85rem; color: #cbd5e1; margin-top: 8px;"></div>
+      </div>
+      
+      <div style="display: flex; gap: 8px; margin: 16px 0;">
+        <button id="duplicate" class="btn">📋 Duplicate</button>
+        <button id="delete" class="btn" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">🗑️ Delete</button>
+      </div>
+    </div>
+    
+    <hr style="margin: 20px 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
+    
+    <h3><i class="fas fa-rocket"></i> Mission Config</h3>
+    <div style="margin: 12px 0;">
+      <label style="display: block; margin-bottom: 4px;">Destination:</label>
+      <select id="destination" style="width: 100%; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #e2e8f0;">
+        <option value="leo">Low Earth Orbit</option>
+        <option value="moon" selected>Lunar Surface</option>
+        <option value="mars">Mars Surface</option>
+        <option value="transit">Deep Space Transit</option>
+      </select>
+    </div>
+    
+    <div style="margin: 12px 0;">
+      <label style="display: block; margin-bottom: 4px;">Mission Duration:</label>
+      <select id="duration" style="width: 100%; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #e2e8f0;">
+        <option value="short">Short (< 30 days)</option>
+        <option value="medium">Medium (30-365 days)</option>
+        <option value="long" selected>Long (1-3 years)</option>
+        <option value="permanent">Permanent (> 3 years)</option>
+      </select>
+    </div>
+    
+    <div style="background: rgba(126, 58, 237, 0.1); padding: 12px; border-radius: 8px; margin-top: 16px;">
+      <h4 style="color: var(--space-purple); margin-bottom: 8px;"><i class="fas fa-brain"></i> AI Analysis</h4>
+      <div id="aiAnalysis" style="font-size: 0.85rem; color: #cbd5e1;">
+        Configure your mission parameters to get NASA-based recommendations.
+      </div>
+    </div>
+    
+    <div style="background: rgba(34, 197, 94, 0.1); padding: 12px; border-radius: 8px; margin-top: 12px;">
+      <h4 style="color: #22c55e; margin-bottom: 8px;"><i class="fas fa-check-circle"></i> Compliance</h4>
+      <div id="compliance" style="font-size: 0.85rem; color: #cbd5e1;">
+        • Power: ⚡ Calculating...
+        <br>• Life Support: 🫁 Calculating...
+        <br>• Safety: 🛡️ Calculating...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// المتغيرات الأساسية
+const stage = document.getElementById('stage');
+const scale = 40; // pixels per meter
+let modules = [];
+let selectedModule = null;
+let dragCounter = 0;
+
+// Module specifications (based on NASA data)
+const moduleSpecs = {
+  sleep: {
+    name: 'Sleep Quarters',
+    icon: '🛏️',
+    description: 'Private sleeping compartment with sleep restraints, personal storage, and communication interface.',
+    requirements: 'Sound dampening, privacy screen, air circulation',
+    power: '50W', airflow: '2 CFM', mass: '120 kg'
+  },
+  kitchen: {
+    name: 'Galley & Food Prep',
+    icon: '🍽️',
+    description: 'Food storage, preparation, and consumption area with hydration station.',
+    requirements: 'Water supply, waste management, heating elements',
+    power: '800W', airflow: '15 CFM', mass: '200 kg'
+  },
+  hygiene: {
+    name: 'Hygiene Station',
+    icon: '🚿',
+    description: 'Waste and hygiene management facility with water recovery systems.',
+    requirements: 'Water recycling, waste processing, ventilation',
+    power: '300W', airflow: '25 CFM', mass: '180 kg'
+  },
+  gym: {
+    name: 'Exercise Equipment',
+    icon: '💪',
+    description: 'Combined operational load analog (COLPA), treadmill, and resistance devices.',
+    requirements: 'Vibration isolation, safety restraints, monitoring',
+    power: '200W', airflow: '10 CFM', mass: '300 kg'
+  },
+  storage: {
+    name: 'Cargo Storage',
+    icon: '📦',
+    description: 'Organized storage for supplies, tools, spare parts, and personal items.',
+    requirements: 'Inventory tracking, easy access, fire suppression',
+    power: '10W', airflow: '2 CFM', mass: '50 kg'
+  },
+  medical: {
+    name: 'Medical Bay',
+    icon: '🏥',
+    description: 'Emergency medical care, diagnostics, and pharmaceutical storage.',
+    requirements: 'Sterilization, emergency access, communication',
+    power: '400W', airflow: '12 CFM', mass: '250 kg'
+  },
+  lab: {
+    name: 'Science Laboratory',
+    icon: '🔬',
+    description: 'Research workspace with experiment racks and sample processing.',
+    requirements: 'Containment, data recording, specialized tools',
+    power: '600W', airflow: '20 CFM', mass: '400 kg'
+  },
+  airlock: {
+    name: 'Airlock',
+    icon: '🚪',
+    description: 'EVA preparation chamber with suit storage and life support interface.',
+    requirements: 'Pressure seals, suit maintenance, emergency backup',
+    power: '150W', airflow: '5 CFM', mass: '350 kg'
+  }
+};
+
+// Initialize stage
+function initializeStage() {
+  const width = document.getElementById('habW').value;
+  const height = document.getElementById('habH').value;
+  stage.style.width = (width * scale + 20) + 'px';
+  stage.style.height = (height * scale + 20) + 'px';
+}
+
+// Drag and Drop functionality
+document.querySelectorAll('.drag-item').forEach(item => {
+  item.addEventListener('dragstart', (e) => {
+    const data = {
+      type: e.target.dataset.type,
+      w: parseFloat(e.target.dataset.w),
+      h: parseFloat(e.target.dataset.h)
+    };
+    e.dataTransfer.setData('text/plain', JSON.stringify(data));
+  });
+});
+
+stage.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  stage.style.borderColor = 'var(--space-cyan)';
+});
+
+stage.addEventListener('dragleave', (e) => {
+  stage.style.borderColor = 'rgba(14, 165, 233, 0.3)';
+});
+
+stage.addEventListener('drop', (e) => {
+  e.preventDefault();
+  stage.style.borderColor = 'rgba(14, 165, 233, 0.3)';
+  
+  try {
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    const rect = stage.getBoundingClientRect();
+    const x = e.clientX - rect.left - (data.w * scale) / 2;
+    const y = e.clientY - rect.top - (data.h * scale) / 2;
+    
+    createModule(data.type, data.w, data.h, x, y);
+  } catch (error) {
+    console.error('Drop error:', error);
+  }
+});
+
+// Create module
+function createModule(type, width, height, x, y) {
+  dragCounter++;
+  const spec = moduleSpecs[type];
+  
+  const module = document.createElement('div');
+  module.className = `habitat-module module-${type}`;
+  module.dataset.id = dragCounter;
+  module.dataset.type = type;
+  module.dataset.w = width;
+  module.dataset.h = height;
+  
+  module.style.width = (width * scale) + 'px';
+  module.style.height = (height * scale) + 'px';
+  module.style.left = Math.max(10, Math.min(x, stage.offsetWidth - width * scale - 10)) + 'px';
+  module.style.top = Math.max(10, Math.min(y, stage.offsetHeight - height * scale - 10)) + 'px';
+  
+  module.innerHTML = `
+    <div class="module-icon">${spec.icon}</div>
+    <div class="module-name">${spec.name}</div>
+    <div class="module-size">${width}×${height}m</div>
+  `;
+  
+  // Make draggable
+  makeDraggable(module);
+  
+  // Click to select
+  module.addEventListener('click', () => selectModule(module));
+  
+  stage.appendChild(module);
+  modules.push(module);
+  
+  updateStatus();
+  updateCompliance();
+}
+
+// Make module draggable
+function makeDraggable(element) {
+  let isDragging = false;
+  let startX, startY, startLeft, startTop;
+  
+  element.addEventListener('mousedown', (e) => {
+    if (e.target !== element && !element.contains(e.target)) return;
+    
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startLeft = parseInt(element.style.left);
+    startTop = parseInt(element.style.top);
+    
+    element.style.zIndex = '1000';
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    
+    e.preventDefault();
+  });
+  
+  function onMouseMove(e) {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - startX;
+    const deltaY = e.clientY - startY;
+    
+    const newLeft = Math.max(10, Math.min(startLeft + deltaX, stage.offsetWidth - element.offsetWidth - 10));
+    const newTop = Math.max(10, Math.min(startTop + deltaY, stage.offsetHeight - element.offsetHeight - 10));
+    
+    element.style.left = newLeft + 'px';
+    element.style.top = newTop + 'px';
+  }
+  
+  function onMouseUp() {
+    isDragging = false;
+    element.style.zIndex = '';
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    updateStatus();
+  }
+}
+
+// Select module
+function selectModule(module) {
+  // Deselect previous
+  if (selectedModule) {
+    selectedModule.classList.remove('selected');
+  }
+  
+  selectedModule = module;
+  module.classList.add('selected');
+  
+  const spec = moduleSpecs[module.dataset.type];
+  document.getElementById('selTitle').textContent = spec.name;
+  document.getElementById('detailTitle').textContent = spec.name;
+  document.getElementById('detailSpecs').innerHTML = `
+    <strong>Description:</strong> ${spec.description}<br>
+    <strong>Requirements:</strong> ${spec.requirements}<br>
+    <strong>Power:</strong> ${spec.power} | <strong>Airflow:</strong> ${spec.airflow} | <strong>Mass:</strong> ${spec.mass}
+  `;
+  
+  document.getElementById('moduleDetails').style.display = 'block';
+}
+
+// Update status
+function updateStatus() {
